@@ -1,0 +1,23 @@
+{
+  "name": "jstor-s3",
+  "version": "1.0.0",
+  "description": "jstor strategy for AWS S3",
+  "main": "jstor-s3.js",
+  "module": "jstor-s3.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "type": "module",
+  "keywords": [
+    "jstor",
+    "s3",
+    "aws",
+    "json",
+    "storage"
+  ],
+  "author": "Hendrik De Permentier",
+  "license": "Beerware",
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.42.0"
+  }
+}

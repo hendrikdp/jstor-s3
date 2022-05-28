@@ -1,0 +1,77 @@
+AWSTemplateFormatVersion: 2010-09-09
+Parameters:
+  BucketName:
+    Description: Name of your s3 bucket
+    Type: String
+    Default: jstor-s3-
+  UserName:
+    Description: Name of the user which will connect to the s3
+    Type: String
+    Default: jstor-s3-user-
+Resources:
+  Bucket:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      BucketName: !Ref BucketName
+      CorsConfiguration:
+        CorsRules:
+          - AllowedOrigins:
+              - '*'
+            AllowedMethods:
+              - 'GET'
+              - 'HEAD'
+            MaxAge: 3000
+            AllowedHeaders:
+              - '*'
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+  User:
+    Type: 'AWS::IAM::User'
+    Properties:
+      UserName: !Ref UserName
+      Policies:
+        - PolicyName: !Ref UserName
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:ListBucket
+                  - s3:ListBucketMultipartUploads
+                  - s3:DeleteObject
+                  - s3:DeleteObjectTagging
+                  - s3:DeleteObjectVersion
+                  - s3:DeleteObjectVersionTagging
+                  - s3:GetObject
+                  - s3:GetObjectAcl
+                  - s3:GetObjectRetention
+                  - s3:GetObjectTagging
+                  - s3:GetObjectVersion
+                  - s3:GetObjectVersionAcl
+                  - s3:GetObjectVersionTagging
+                  - s3:PutObject
+                  - s3:PutObjectAcl
+                  - s3:PutObjectRetention
+                  - s3:PutObjectTagging
+                  - s3:PutObjectVersionAcl
+                  - s3:PutObjectVersionTagging
+                Resource:
+                  - !Sub 'arn:aws:s3:${AWS::Region}:${AWS::AccountId}:${Bucket}/*'
+                  - !Sub 'arn:aws:s3:${AWS::Region}:${AWS::AccountId}:${Bucket}'
+  UserKey:
+    Type: 'AWS::IAM::AccessKey'
+    Properties:
+      UserName: !Ref User
+Outputs:
+  Bucket:
+    Description: 'Created bucket'
+    Value: !Ref Bucket
+  UserKey:
+    Description: 'Created user id'
+    Value: !Ref UserKey
+  UserKeySecret:
+    Description: 'Created user secret key'
+    Value: !GetAtt UserKey.SecretAccessKey
