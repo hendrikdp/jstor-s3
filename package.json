@@ -1,6 +1,6 @@
 {
   "name": "jstor-s3",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "jstor strategy for AWS S3",
   "main": "jstor-s3.js",
   "module": "jstor-s3.js",

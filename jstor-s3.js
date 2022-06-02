@@ -72,15 +72,20 @@ export default function(options = {}){
         return {
 
             async get(key){
-                const getParams = getCmdParams(key);
-                const cmd = new GetObjectCommand(getParams);
-                const s3Resp = await s3Client.send(cmd);
-                const s3Stream = s3Resp.Body;
-                if(s3Stream instanceof Readable){
-                    const data = await readStream(s3Stream);
-                    return data;
-                }else{
-                   throw new Error(`jstor s3: No readable stream found for ${key}`) ;
+                try{
+                    const getParams = getCmdParams(key);
+                    const cmd = new GetObjectCommand(getParams);
+                    const s3Resp = await s3Client.send(cmd);
+                    const s3Stream = s3Resp.Body;
+                    if(s3Stream instanceof Readable){
+                        const data = await readStream(s3Stream);
+                        return data;
+                    }else{
+                        throw new Error(`jstor s3: No readable stream found for ${key}`) ;
+                    }
+                }catch(e){
+                    //if a key does not exist S3 will return an error message... Where jstor will just indicate File.exists = false;
+                    return;
                 }
             },
 
