@@ -7,14 +7,22 @@ import {
     DeleteObjectCommand,
     ListObjectsCommand
 } from "@aws-sdk/client-s3";
+import { NodeHttpHandler } from '@aws-sdk/node-http-handler';
 import { Readable } from "stream";
+import HttpsProxyAgent from 'https-proxy-agent';
+
+export function getProxyHttpsHandler(httpsProxy){
+    return new NodeHttpHandler({
+        httpsAgent: new HttpsProxyAgent(httpsProxy)
+    });
+}
 
 function readStream(stream) {
     stream.setEncoding('utf8');
     return new Promise((resolve, reject) => {
         const data = [];
         stream.on("data", chunk => data.push(chunk));
-        stream.on("end", () => resolve(data.join()));
+        stream.on("end", () => resolve(data.join('')));
         stream.on("error", error => reject(error));
     });
 }
@@ -35,11 +43,18 @@ export default function(options = {}){
     const envs = {
         region: process.env.AWS_DEFAULT_REGION || 'eu-west-1',
         id: process.env.AWS_ACCESS_KEY_ID,
-        key: process.env.AWS_SECRET_ACCESS_KEY
+        key: process.env.AWS_SECRET_ACCESS_KEY,
+        httpsProxy: process.env.HTTPS_PROXY
     };
     if(!options.region) options.region = envs.region;
     if(!options.credentials?.accessKeyId && envs.id) options.credentials.accessKeyId = envs.id;
     if(!options.credentials?.secretAccessKey && envs.key) options.credentials.secretAccessKey = envs.key;
+
+    //set proxy agent if needed
+    const httpsProxy = options.httpsProxy || envs.httpsProxy;
+    if(httpsProxy){
+        options.requestHandler = getProxyHttpsHandler(httpsProxy);
+    }
 
     //create s3 client
     const s3Client = new S3Client(options);
@@ -92,6 +107,7 @@ export default function(options = {}){
             async save(key, document){
                 const saveParams = getCmdParams(key);
                 saveParams.Body = JSON.stringify(document, null, 3);
+                saveParams.ContentType = "application/json";
                 const cmd = new PutObjectCommand(saveParams);
                 await s3Client.send(cmd);
                 return document;

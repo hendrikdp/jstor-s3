@@ -1,6 +1,6 @@
 {
   "name": "jstor-s3",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "jstor strategy for AWS S3",
   "main": "jstor-s3.js",
   "module": "jstor-s3.js",
@@ -18,6 +18,8 @@
   "author": "Hendrik De Permentier",
   "license": "Beerware",
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.42.0"
+    "@aws-sdk/client-s3": "^3.42.0",
+    "@aws-sdk/node-http-handler": "^3.171.0",
+    "https-proxy-agent": "^5.0.1"
   }
 }
