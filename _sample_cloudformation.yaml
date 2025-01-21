@@ -59,8 +59,8 @@ Resources:
                   - s3:PutObjectVersionAcl
                   - s3:PutObjectVersionTagging
                 Resource:
-                  - !Sub 'arn:aws:s3:${AWS::Region}:${AWS::AccountId}:${Bucket}/*'
-                  - !Sub 'arn:aws:s3:${AWS::Region}:${AWS::AccountId}:${Bucket}'
+                  - !Sub 'arn:aws:s3::${AWS::AccountId}:${Bucket}/*'
+                  - !Sub 'arn:aws:s3::${AWS::AccountId}:${Bucket}'
   UserKey:
     Type: 'AWS::IAM::AccessKey'
     Properties:
